@@ -37,12 +37,12 @@ func GetSpecification(id string) ([]Characteristic, error) {
 
 func ListProducts(id string) ([]string, error) {
 	NEWurl := "http://ark.intel.com/products/family/" + id
-	doc2, err := goquery.NewDocument(NEWurl)
+	doc3, err := goquery.NewDocument(NEWurl)
 	if err != nil {
 		return nil, err
 	}
 	var Slice []string
-	doc2.Find("table.infoTable>tbody>tr>td>a").Each(func(i int, s *goquery.Selection) {
+	doc3.Find("table.infoTable>tbody>tr>td>a").Each(func(i int, s *goquery.Selection) {
 		Link, ok := s.Attr("href")
 		if !ok {
 			return
