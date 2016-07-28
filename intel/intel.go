@@ -14,7 +14,7 @@ type Characteristic struct {
 }
 
 func GetSpecification(id string) ([]Characteristic, error) {
-	NewURL := "http://ark.intel.com/products/" + id
+	NewURL := baseUrl + "/products/" + id
 	doc, err := goquery.NewDocument(NewURL)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func GetSpecification(id string) ([]Characteristic, error) {
 }
 
 func ListProducts(id string) ([]string, error) {
-	NEWurl := "http://ark.intel.com/products/family/" + id
+	NEWurl := baseUrl + "/products/family/" + id
 	doc, err := goquery.NewDocument(NEWurl)
 	if err != nil {
 		return nil, err
@@ -61,10 +61,11 @@ func ListProducts(id string) ([]string, error) {
 	return Slice, nil
 }
 
+const baseUrl = "http://ark.intel.com"
+
 func GetFamiliesId() ([]string, error) {
 	var Slice []string
-	const url = "http://ark.intel.com/"
-	doc, err := goquery.NewDocument(url)
+	doc, err := goquery.NewDocument(baseUrl)
 	if err != nil {
 		return nil, err
 	}
