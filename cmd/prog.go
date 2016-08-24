@@ -1,6 +1,6 @@
 package main
 
-import "AWESOME/crawl/intel"
+import "github.com/lithium555/crawl/intel"
 
 func main() {
 	//	Here, _ := GetId("http://ark.intel.com/products/family/88392/6th-Generation-Intel-Core-i7-Processors#@Desktop")

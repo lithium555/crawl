@@ -3,6 +3,7 @@ package capacitors
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/dennwc/gcrawl"
 	"log"
 	"strings"
 )
@@ -72,19 +73,19 @@ func List(id string) (capacitors []string, nextPage string, _ error) {
 //	}
 //}
 
-type Characteristic struct {
-	Id          string
-	Description string
-	Value       string
-}
+//type Characteristic struct {
+//	Id          string
+//	Description string
+//	Value       string
+//}
 
 // "http://www.digikey.com/product-detail/en/elna-america/DSK-3R3H224U-HL/604-1020-2-ND/970181"
-func GetCapacitorsINFO(pageUrl string) ([]Characteristic, error) {
+func GetCapacitorsINFO(pageUrl string) (*gcrawl.Object, error) {
 	doc, err := goquery.NewDocument(pageUrl)
 	if err != nil {
 		return nil, err
 	}
-	var Slice []Characteristic
+	var Slice []gcrawl.Property
 	doc.Find("table.attributes-table-main>tbody>tr").Each(func(i int, s *goquery.Selection) {
 		Left := strings.TrimSpace(s.Find("th").Text())
 		Right := strings.TrimSpace(s.Find("td").Text())
@@ -109,13 +110,15 @@ func GetCapacitorsINFO(pageUrl string) ([]Characteristic, error) {
 		if ok {
 			return
 		}
-		Slice = append(Slice, Characteristic{
-			Id:          "",
-			Description: Key,
-			Value:       Value})
+		Slice = append(Slice, gcrawl.Property{
+			ID:    "",
+			Name:  Key,
+			Value: gcrawl.String(Value)})
 	})
+	var data gcrawl.Object
+	data.Properties = append(data.Properties, Slice...)
 	log.Printf("GIVE ME SLICE: '%q'\n", Slice)
-	return Slice, nil
+	return &data /*Slice*/, nil
 }
 
 const CapacitorsURL2 = "http://www.digikey.com/product-search/en/capacitors"

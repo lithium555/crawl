@@ -3,23 +3,25 @@ package intel
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/dennwc/gcrawl"
 	"log"
 	"strings"
 )
 
-type Characteristic struct {
-	Id    string
-	Key   string
-	Value string
-}
+//
+//type Characteristic struct {
+//	Id    string
+//	Key   string
+//	Value string
+//}
 
-func GetSpecification(id string) ([]Characteristic, error) {
+func GetSpecification(id string) (*gcrawl.Object /*[]Characteristic*/, error) {
 	NewURL := baseUrl + "/products/" + id
 	doc, err := goquery.NewDocument(NewURL)
 	if err != nil {
 		return nil, err
 	}
-	var Slice []Characteristic
+	var Slice []gcrawl.Property //Characteristic
 	doc.Find("table.specs.infoTable>tbody>tr[id]").Each(func(i int, s *goquery.Selection) {
 		Key := strings.TrimSpace(s.Find(".lc").Text())
 		Value := strings.TrimSpace(s.Find(".rc").Text())
@@ -27,12 +29,20 @@ func GetSpecification(id string) ([]Characteristic, error) {
 		if !ok {
 			return
 		}
-		Slice = append(Slice, Characteristic{
-			Id:    strings.TrimSpace(Link),
-			Key:   Key,
-			Value: Value})
+		//Slice = append(Slice, Characteristic{
+		//	Id:    strings.TrimSpace(Link),
+		//	Key:   Key,
+		//	Value: Value})
+		// ZAMENA
+		Slice = append(Slice, gcrawl.Property{
+			ID:    strings.TrimSpace(Link),
+			Name:  Key,
+			Value: gcrawl.String(Value), //Value,
+		})
 	})
-	return Slice, nil
+	var data gcrawl.Object
+	data.Properties = append(data.Properties, Slice...)
+	return &data /*Slice*/, nil
 }
 
 func ListProducts(id string) ([]string, error) {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"amazing/Project_1/crawl/capacitors"
 	"fmt"
+	"github.com/lithium555/crawl/capacitors"
 )
 
 func main() {
