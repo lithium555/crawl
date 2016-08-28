@@ -91,7 +91,6 @@ func GetCapacitorsINFO(pageUrl string) (*gcrawl.Object, error) {
 		Right := strings.TrimSpace(s.Find("td").Text())
 		RightWithLink := s.Find("td a")
 		link, _ := RightWithLink.Attr("href")
-		//		log.Printf("RightWithLink: '%v'\n", link)
 		if strings.HasPrefix(link, "javascript:") {
 			link = ""
 		}
@@ -113,12 +112,17 @@ func GetCapacitorsINFO(pageUrl string) (*gcrawl.Object, error) {
 		Slice = append(Slice, gcrawl.Property{
 			ID:    "",
 			Name:  Key,
-			Value: gcrawl.String(Value)})
+			Value: gcrawl.String(Value),
+		})
 	})
-	var data gcrawl.Object
-	data.Properties = append(data.Properties, Slice...)
-	log.Printf("GIVE ME SLICE: '%q'\n", Slice)
-	return &data /*Slice*/, nil
+	//var data gcrawl.Object
+	//data.Properties = append(data.Properties, Slice...)
+	//var data gcrawl.Object
+	//data.Properties = Slice
+	return &gcrawl.Object{
+		URL:        pageUrl,
+		Properties: Slice,
+	}, nil
 }
 
 const CapacitorsURL2 = "http://www.digikey.com/product-search/en/capacitors"

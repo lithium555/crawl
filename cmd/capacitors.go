@@ -29,8 +29,8 @@ func main() {
 	//	fmt.Printf("Capacitors slice: '%v'\n", caps)
 	//}
 	caps, next, _ := capacitors.List(url)
-	fmt.Printf("next is: '%v' \n", next)
-	fmt.Printf("caps is: '%v'\n", caps)
+	fmt.Printf("next is: '%q' \n", next)
+	fmt.Printf("caps is: '%q'\n", caps)
 
 	fmt.Println()
 	fmt.Println()

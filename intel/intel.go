@@ -1,20 +1,16 @@
 package intel
 
 import (
-	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/dennwc/gcrawl"
-	"log"
 	"strings"
 )
 
-//
 //type Characteristic struct {
 //	Id    string
 //	Key   string
 //	Value string
 //}
-
 func GetSpecification(id string) (*gcrawl.Object /*[]Characteristic*/, error) {
 	NewURL := baseUrl + "/products/" + id
 	doc, err := goquery.NewDocument(NewURL)
@@ -23,26 +19,49 @@ func GetSpecification(id string) (*gcrawl.Object /*[]Characteristic*/, error) {
 	}
 	var Slice []gcrawl.Property //Characteristic
 	doc.Find("table.specs.infoTable>tbody>tr[id]").Each(func(i int, s *goquery.Selection) {
-		Key := strings.TrimSpace(s.Find(".lc").Text())
-		Value := strings.TrimSpace(s.Find(".rc").Text())
-		Link, ok := s.Attr("id")
+		key := strings.TrimSpace(s.Find(".lc").Text())
+		key = strings.Trim(key, " ‡")
+		value := strings.TrimSpace(s.Find(".rc").Text())
+		link, ok := s.Attr("id")
 		if !ok {
 			return
 		}
-		//Slice = append(Slice, Characteristic{
-		//	Id:    strings.TrimSpace(Link),
-		//	Key:   Key,
-		//	Value: Value})
-		// ZAMENA
+		//valWithLink := s.Find("td>a")
+		//l, _ := valWithLink.Attr("href")
+		//if l == ""{
+		//	value = value
+		//}else{
+		//	value = l
+		//}
+		//Закоммиченый код можно написать в двух вариантах, вариант первый:
+		//valWithLink := s.Find("td>a")
+		//if l, _ := valWithLink.Attr("href"); l != ""{
+		//	value = l
+		//}
+		// Вариант второй:
+		var data gcrawl.Value
+		if l, _ := s.Find("td>a").Attr("href"); l != "" {
+			value = l
+			data = gcrawl.URL(value)
+		} else if value == "Yes" {
+			data = gcrawl.Bool(true)
+		} else if value == "No" {
+			data = gcrawl.Bool(false)
+		} else {
+			data = gcrawl.String(value)
+		}
 		Slice = append(Slice, gcrawl.Property{
-			ID:    strings.TrimSpace(Link),
-			Name:  Key,
-			Value: gcrawl.String(Value), //Value,
+			ID:    strings.TrimSpace(link),
+			Name:  key,
+			Value: data,
 		})
 	})
-	var data gcrawl.Object
-	data.Properties = append(data.Properties, Slice...)
-	return &data /*Slice*/, nil
+	//var data gcrawl.Object
+	//data.Properties = append(data.Properties, Slice...)
+	return &gcrawl.Object{
+		URL:        NewURL,
+		Properties: Slice,
+	}, nil
 }
 
 func ListProducts(id string) ([]string, error) {
@@ -85,7 +104,7 @@ func GetFamiliesId() ([]string, error) {
 			return
 		}
 		Result := strings.TrimSpace(Link)
-		log.Printf("THE RESULT:   '%v'", Result)
+		//log.Printf("THE RESULT:   '%v'", Result)
 		if !strings.Contains(Result, "/products/") {
 			return
 		}
@@ -95,7 +114,7 @@ func GetFamiliesId() ([]string, error) {
 			return
 		}
 		Result = strings.TrimPrefix(Link, "/products/family/")
-		fmt.Printf("WITHOUT PREFIX:   '%v' \n", Result)
+		//fmt.Printf("WITHOUT PREFIX:   '%v' \n", Result)
 		//href="59133/2nd-Generation-Intel-Core-i3-Processors#@Desktop"
 		Index := strings.Index(Result, "/")
 		if Index < 0 {
