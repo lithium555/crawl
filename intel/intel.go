@@ -3,10 +3,10 @@ package intel
 import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/dennwc/gcrawl"
-	"strings"
+	"github.com/lithium555/crawl/parser"
 	"log"
 	"strconv"
-	"github.com/lithium555/crawl/funcParseUnit"
+	"strings"
 )
 
 //type Characteristic struct {
@@ -51,19 +51,19 @@ func GetSpecification(id string) (*gcrawl.Object /*[]Characteristic*/, error) {
 			data = gcrawl.Bool(true)
 		} else if value == "No" {
 			data = gcrawl.Bool(false)
-		}else if intValue, err := strconv.ParseInt(value, 0, 64); err == nil {
+		} else if intValue, err := strconv.ParseInt(value, 0, 64); err == nil {
 			data = gcrawl.Int(intValue)
-		}else if floatValue, err := strconv.ParseFloat(value, 64); err == nil{
+		} else if floatValue, err := strconv.ParseFloat(value, 64); err == nil {
 			data = gcrawl.Float(floatValue)
-		}else if unitValue, err := funcParseUnit.ParseUnits(value); err == nil{
+		} else if unitValue, err := parser.ParseUnits(value); err == nil {
 			data = *unitValue
 			/*
-			 type Unit struct {
-					Value float64
-					Unit  string
-				}
+				 type Unit struct {
+						Value float64
+						Unit  string
+					}
 			*/
-		}else {
+		} else {
 			data = gcrawl.String(value)
 		}
 		Slice = append(Slice, gcrawl.Property{
