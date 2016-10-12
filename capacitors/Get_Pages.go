@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/dennwc/gcrawl"
+	"github.com/lithium555/crawl/funcParseUnit"
 	"log"
 	"strings"
 )
@@ -94,9 +95,12 @@ func GetCapacitorsINFO(pageUrl string) (*gcrawl.Object, error) {
 		if strings.HasPrefix(link, "javascript:") {
 			link = ""
 		}
-		log.Printf("link after 0: '%v'", link)
+		//log.Printf("link after 0: '%v'", link)
 		Key := Left
 		Value := Right
+		var gcrawl_value gcrawl.Value
+		//	log.Printf("LEFT IS: '%v'\n", Left)
+		//log.Printf("RIGHT IS: '%v'\n", Right)
 		if link != "" {
 			if strings.HasSuffix(link, ".pdf") || strings.HasPrefix(link, CapacitorsURL) {
 				fmt.Printf("link with suffix: '%v' \n", link)
@@ -109,11 +113,24 @@ func GetCapacitorsINFO(pageUrl string) (*gcrawl.Object, error) {
 		if ok {
 			return
 		}
+		/////////////////////////////////////////////////////////////////////////////////////////////
+		if Value == "-" {
+			gcrawl_value = gcrawl.Bool(false)
+		}else if unitValue, err := funcParseUnit.ParseUnits(Value); err == nil {
+			gcrawl_value = *unitValue
+			log.Printf("gcrawl_Value is '%v'\n", gcrawl_value)
+		//}else if _, err := funcParseUnit.ParseUnits(Value); err != nil {
+		//	log.Printf("FUNC ParseUnits FAILED, error is '%v'\n", err)
+		}else if strings.HasPrefix(Value, CapacitorsURL){
+			gcrawl_value = gcrawl.URL(Value)
+		}else {
+			gcrawl_value = gcrawl.String(Value)
+		}
+		//log.Printf("gcrawl_VALUE: '%v'\n", gcrawl_value)
 		Slice = append(Slice, gcrawl.Property{
 			ID:    "",
 			Name:  Key,
-			Value: gcrawl.String(Value),
-		})
+			Value: gcrawl_value})
 	})
 	//var data gcrawl.Object
 	//data.Properties = append(data.Properties, Slice...)

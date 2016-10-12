@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/dennwc/gcrawl/nquads"
 	"github.com/lithium555/crawl/intel"
-	"log"
 )
 
 func main() {
@@ -26,6 +25,6 @@ func main() {
 
 	var b bytes.Buffer
 	err := nquads.WriteObject(&b, val)
-	log.Printf("b is == '%v'", b.String())
+//	log.Printf("b is == '%v'", b.String())
 	fmt.Println(err)
 }

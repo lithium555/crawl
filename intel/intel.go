@@ -4,6 +4,9 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/dennwc/gcrawl"
 	"strings"
+	"log"
+	"strconv"
+	"github.com/lithium555/crawl/funcParseUnit"
 )
 
 //type Characteristic struct {
@@ -11,6 +14,7 @@ import (
 //	Key   string
 //	Value string
 //}
+
 func GetSpecification(id string) (*gcrawl.Object /*[]Characteristic*/, error) {
 	NewURL := baseUrl + "/products/" + id
 	doc, err := goquery.NewDocument(NewURL)
@@ -47,7 +51,19 @@ func GetSpecification(id string) (*gcrawl.Object /*[]Characteristic*/, error) {
 			data = gcrawl.Bool(true)
 		} else if value == "No" {
 			data = gcrawl.Bool(false)
-		} else {
+		}else if intValue, err := strconv.ParseInt(value, 0, 64); err == nil {
+			data = gcrawl.Int(intValue)
+		}else if floatValue, err := strconv.ParseFloat(value, 64); err == nil{
+			data = gcrawl.Float(floatValue)
+		}else if unitValue, err := funcParseUnit.ParseUnits(value); err == nil{
+			data = *unitValue
+			/*
+			 type Unit struct {
+					Value float64
+					Unit  string
+				}
+			*/
+		}else {
 			data = gcrawl.String(value)
 		}
 		Slice = append(Slice, gcrawl.Property{
@@ -56,6 +72,7 @@ func GetSpecification(id string) (*gcrawl.Object /*[]Characteristic*/, error) {
 			Value: data,
 		})
 	})
+	log.Println(Slice)
 	//var data gcrawl.Object
 	//data.Properties = append(data.Properties, Slice...)
 	return &gcrawl.Object{
@@ -87,6 +104,7 @@ func ListProducts(id string) ([]string, error) {
 		}
 		Slice = append(Slice, REZ[:Index])
 	})
+	//log.Println(Slice)
 	return Slice, nil
 }
 
