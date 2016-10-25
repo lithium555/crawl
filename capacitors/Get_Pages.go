@@ -40,9 +40,14 @@ func List(id string) (capacitors []string, nextPage string, _ error) {
 			return
 		}
 		nP = strings.TrimSpace(link)
+		log.Printf("newPage = '%v'\n", nP)
 	})
 	capacitors = caps
-	nextPage = CapacitorsURL + nP
+	if nP == "" {
+		nextPage = ""
+	} else {
+		nextPage = CapacitorsURL + nP
+	}
 	//fmt.Printf("NEXTPAGE: '%v'\n", nP)
 	//log.Printf("capacitors: '%v'", capacitors)
 	return capacitors, nextPage, nil

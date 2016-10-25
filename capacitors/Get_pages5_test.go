@@ -1,7 +1,50 @@
 package capacitors
 
-import "testing"
+import (
+	"fmt"
+	"log"
+	"testing"
+)
 
-func TestGetCapacitorsINFO2(t *testing.T) {
-	GetCapacitorsINFO("http://www.digikey.com/product-detail/en/elna-america/DSK-3R3H224U-HL/604-1020-2-ND/970181")
+func TestList5(t *testing.T) {
+	const try = 70                                                                                                                 // объявил количество итераций в цикле
+	var i int                                                                                                                      // объявил счётчик для цикла
+	const url = "http://www.digikey.com/product-search/en/capacitors/electric-double-layer-capacitors-edlc-supercapacitors/131084" //  создаю переменную для сохранения юрл н аследующую страницу
+	for next := url; next != "" && i < try; i++ {
+		fmt.Printf("next BEFORE function List = '%v'\n", next)
+		_, nextPage, err := List(next) //Вызов функции List с указанным ЮРЛ
+		log.Printf("NextPage = '%v'\n", nextPage)
+		next = nextPage
+		log.Printf(" I in the cycle = '%v'\n", i)
+		if err != nil {
+			log.Printf("ERROR in capacitors.GetCapacitorsFamily(): '%v'\n", err)
+		}
+		fmt.Printf("NEWnextPage = '%v'\n", nextPage)
+	}
+	log.Printf("I after cycle = '%v'\n", i)
+	if i >= try {
+		//это проверка "если цикл завалиться на следующую итерацию из-за лимита, ..."
+		t.Fatal("too many pages")
+	} else if i == 0 {
+		t.Fatal("no pages")
+	}
 }
+
+//Ну логика в том что фор конечный ЕСЛИ функция хоть раз вернула пустой
+/*
+ `сделай такой тест - берешь вызываешь лист с какой-то ссылкой, и после страницы N он должен вернуть next=""`
+что значит после страницы? f gjckt cnhfybws 42
+*/
+
+/*
+ смотри, у тебя сейчас в голове есть модель как это все должно работать, но оно не работает
+это значит что модель неверная или код не соответствует модели
+в таких случаях ты должен начинать подозревать все сложные элементы по порядку
+я сейчас говорю что баг в тесте, так что твой анализ сужается до 20 строк кода
+в основном ты должен смотреть на результаты ифов, на переменные циклов и на аргументы/возврат из функций
+это то, что тебе неизвестно когда ты смотришь на код (что именно происходит в программе не так)
+печатаешь все это и делаешь выводы
+не стоит просто сидеть и говорить "нет идей" - пробуй найти проблему
+только при этом важно не менять сам код, иначе можешь внести новые баги
+разберись с причиной текущей проблемы, а потом уже иди дальше
+*/

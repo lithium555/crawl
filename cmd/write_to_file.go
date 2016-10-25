@@ -39,7 +39,6 @@ func main() {
 	//		fmt.Println(err2)
 	//	}
 	//}
-
 	families, err := intel.GetFamiliesId()
 	if err != nil {
 		log.Printf("ERROR in intel.GetFamiliesId: '%v'\n", err)
