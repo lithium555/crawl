@@ -11,6 +11,7 @@ import (
 
 // "/product-search/en/capacitors"
 const CapacitorsURL = "http://www.digikey.com"
+const minURL = "?pageSize=500"
 
 func List(id string) (capacitors []string, nextPage string, _ error) {
 	//	log.Printf("ID: '%v'", id)
@@ -43,13 +44,14 @@ func List(id string) (capacitors []string, nextPage string, _ error) {
 		log.Printf("newPage = '%v'\n", nP)
 	})
 	capacitors = caps
-	if nP == "" {
-		nextPage = ""
-	} else {
-		nextPage = CapacitorsURL + nP
+	if nP != "" {
+		nextPage = CapacitorsURL + nP + minURL
 	}
 	//fmt.Printf("NEXTPAGE: '%v'\n", nP)
 	//log.Printf("capacitors: '%v'", capacitors)
+	if len(capacitors) == 0 {
+		return nil, "", fmt.Errorf("This URL is not variable for func List, URL = '%v'\n", id)
+	}
 	return capacitors, nextPage, nil
 }
 
