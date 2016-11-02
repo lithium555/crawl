@@ -1,23 +1,24 @@
 package aliExpress
 
 import (
-	"reflect"
+	"fmt"
+	"log"
+	"strings"
 	"testing"
 )
 
 func TestGetComputerId(t *testing.T) {
 	testSlice := []string{
-		"https://ru.aliexpress.com/af/category/202002176.html?g=y&d=n&catName=tablet-pcs&origin=n&isViewCP=y&spm=2114.11020108.105.2.tEMEQT&pvId=19012-200658763",
-		"https://ru.aliexpress.com/af/category/202004359.html?origin=n&g=y&isViewCP=y&spm=2114.11020108.105.6.tEMEQT&d=n&catName=tablet-accessories",
-		"https://ru.aliexpress.com/af/category/202002183.html?origin=n&isViewCP=y&spm=2114.11020108.105.23.tEMEQT&d=n&catName=internal-solid-state-disks-ssd",
-		"https://ru.aliexpress.com/af/category/202000058.html?origin=n&isViewCP=y&spm=2114.11020108.110.3.tEMEQT&d=n&catName=speakers",
-		"https://ru.aliexpress.com/af/category/202000400.html?origin=n&isViewCP=y&spm=2114.11020108.110.4.tEMEQT&d=n&catName=memory-card",
-		"https://ru.aliexpress.com/af/category/202001121.html?origin=n&isViewCP=y&spm=2114.11020108.110.5.tEMEQT&d=n&catName=digital-battery",
-		"https://ru.aliexpress.com/af/category/202040673.html?origin=n&isViewCP=y&spm=2114.11020108.110.23.tEMEQT&d=n&catName=smart-watches",
-		"https://ru.aliexpress.com/af/category/202040732.html?origin=n&isViewCP=y&spm=2114.11020108.110.22.tEMEQT&d=n&catName=smart-home",
-		"https://ru.aliexpress.com/af/category/202005798.html?origin=n&isViewCP=y&spm=2114.11020108.110.25.tEMEQT&d=n&catName=psp",
-		"https://ru.aliexpress.com/af/category/202059382.html?origin=n&isViewCP=y&spm=2114.11020108.105.16.tEMEQT&d=n&catName=sensors-alarms",
-		"https://ru.aliexpress.com/af/category/202000321.html?origin=n&isViewCP=y&spm=2114.11020108.105.15.tEMEQT&d=n&catName=surveillance-products",
+		"https://ru.aliexpress.com/category/202003357/audio.html",
+		"https://ru.aliexpress.com/category/202003040/alarm-systems-security.html",
+		"https://ru.aliexpress.com/category/200003200/digital-cables.html",
+		"https://ru.aliexpress.com/category/63710/mp3-player.html",
+		"https://ru.aliexpress.com/category/100005062/tablet-pcs.html",
+		"https://ru.aliexpress.com/category/100005062/tablet-pcs.html",
+		"https://ru.aliexpress.com/category/3008/sensors-alarms.html",
+		"https://ru.aliexpress.com/category/2118/printers.html",
+		"https://ru.aliexpress.com/category/3011/surveillance-products.html",
+		"https://ru.aliexpress.com/category/202000014/security-protection.html",
 	}
 	rez, err := GetComputerId()
 	if err != nil {
@@ -26,27 +27,67 @@ func TestGetComputerId(t *testing.T) {
 	if len(rez) == 0 {
 		t.Error("Func GetComputerId doesn`t work, the lel(rez)==0")
 	}
-	if !reflect.DeepEqual(testSlice, rez) {
-		t.Errorf("The slices are not equally: testSlice: '%v' \n rezSlice: '%v'\n", testSlice, rez)
+	//if !reflect.DeepEqual(testSlice, rez) {
+	//	t.Errorf("The slices are not equally: testSlice: '%v' \n rezSlice: '%v'\n", testSlice, rez)
+	//}
+	//if !containsAll(testSlice, rez) {
+	//	t.Error("Values doesn`t exist in rez!!!")
+	//}
+	errorArr := exist(testSlice, rez)
+	for _, u := range errorArr {
+		t.Errorf("errorArr = '%v'\n", u)
 	}
-	if !containsAll(testSlice, rez) {
-		t.Error("Values doesn`t exist in rez!!!")
+
+	sl, err := Get()
+	if err != nil {
+		t.Errorf("Func Get() does not work, err = '%v'\n", err)
 	}
+	for _, e := range sl {
+		log.Printf("e = '%v'\n", e)
+	}
+	val, err := GetList(noteBooks)
+	if err != nil {
+		t.Errorf("GetList() doesn`t work, err = '%v'\n", err)
+	}
+	for _, b := range val {
+		fmt.Printf("b = '%v'\n", b)
+	}
+
 }
-func containsAll(expect, arr []string) bool {
-	m := make(map[string]struct{}, len(expect)) // создал мапу динной слайса expect, который = testSlice
-	for _, v := range expect {                  // проходим по всем знаечниям слайса expect
-		m[v] = struct{}{} //we write all elements as keys into a map (ложим все элементы со слайса экспект как ключи значений в мапе m)
-	} // alues does not matter, we just want to be able to find any element in it (as key)
-	for _, v := range arr { // Далее мы перебираем все значения в основном массиве arr = rez
-		if len(m) == 0 { //если длинна мапы равна нулю, выйти
-			return true /* the loop will have an end anyway, because `arr` is limited
-			but, why to continue loop if we already found everything? this condition
-			terminates the loop as soon as it finds all element in `expect`*/
+
+const noteBooks = "https://ru.aliexpress.com/af/category/202000104.html"
+
+//func containsAll(expect, arr []string) bool {
+//	m := make(map[string]struct{}, len(expect)) // создал мапу динной слайса expect, который = testSlice
+//	for _, v := range expect {                  // проходим по всем знаечниям слайса expect
+//		m[v] = struct{}{} //we write all elements as keys into a map (ложим все элементы со слайса экспект как ключи значений в мапе m)
+//	} // alues does not matter, we just want to be able to find any element in it (as key)
+//	for _, v := range arr { // Далее мы перебираем все значения в основном массиве arr = rez
+//		if len(m) == 0 { //если длинна мапы равна нулю, выйти
+//			return true /* the loop will have an end anyway, because `arr` is limited
+//			but, why to continue loop if we already found everything? this condition
+//			terminates the loop as soon as it finds all element in `expect`*/
+//		}
+//		delete(m, v) // удалить с мапы m элемент v
+//	}
+//	return len(m) == 0
+//}
+func exist(testSlice, rez []string) []string {
+	var arr3 []string
+	for i := 0; i < len(testSlice); i++ {
+		isUnique := true
+		for j := 0; j < len(rez); j++ {
+			if strings.HasPrefix(rez[j], testSlice[i]) { // testSlice[i] == rez[j]
+				//	if strings.HasPrefix(data[i], "//") {
+				isUnique = false
+				break /* брейк позволяет не сравнивать дальше если и так уже понятно что это не уникальный елемент*/
+			}
 		}
-		delete(m, v) // удалить с мапы m элемент v
+		if isUnique == true {
+			arr3 = append(arr3, testSlice[i])
+		}
 	}
-	return len(m) == 0
+	return arr3
 }
 
 /*
