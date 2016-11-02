@@ -2,6 +2,7 @@ package aliExpress
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"github.com/dennwc/gcrawl"
 	"strings"
 )
 
@@ -68,6 +69,9 @@ func Get() ([]string, error) {
 	return data, nil
 }
 
+// BASIC SITE:
+//   https://ru.aliexpress.com/all-wholesale-products.html
+
 func GetList(v string) ([]string, error) {
 	var data []string
 	doc, err := goquery.NewDocument(v)
@@ -88,4 +92,27 @@ func GetList(v string) ([]string, error) {
 		}
 	}
 	return data, nil
+}
+
+func GetAliSpecification(url string) (*gcrawl.Object, error) {
+	doc, err := goquery.NewDocument(url)
+	if err != nil {
+		return nil, err
+	}
+	var slice []gcrawl.Property
+	doc.Find(".ui-box-body .product-property-list.util-clearfix li").Each(func(i int, s *goquery.Selection) {
+		left := strings.TrimSpace(s.Find(".propery-title").Text())
+		right := strings.TrimSpace(s.Find(".propery-des").Text())
+		var data gcrawl.Value
+		data = gcrawl.String(right)
+		slice = append(slice, gcrawl.Property{
+			ID:    "",
+			Name:  left,
+			Value: data,
+		})
+	})
+	return &gcrawl.Object{
+		URL:        url,
+		Properties: slice,
+	}, nil
 }

@@ -2,7 +2,6 @@ package aliExpress
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"testing"
 )
@@ -38,24 +37,29 @@ func TestGetComputerId(t *testing.T) {
 		t.Errorf("errorArr = '%v'\n", u)
 	}
 
-	sl, err := Get()
+	//sl, err := Get()
+	//if err != nil {
+	//	t.Errorf("Func Get() does not work, err = '%v'\n", err)
+	//}
+	//for _, e := range sl {
+	//	log.Printf("e = '%v'\n", e)
+	//}
+	//val, err := GetList(noteBooks)
+	//if err != nil {
+	//	t.Errorf("GetList() doesn`t work, err = '%v'\n", err)
+	//}
+	//for _, b := range val {
+	//	fmt.Printf("b = '%v'\n", b)
+	//}
+	qrawl, err := GetAliSpecification(OneNote)
 	if err != nil {
-		t.Errorf("Func Get() does not work, err = '%v'\n", err)
+		t.Errorf("func GetAliSpecification() doen`t work, er = '%v'\n", err)
 	}
-	for _, e := range sl {
-		log.Printf("e = '%v'\n", e)
-	}
-	val, err := GetList(noteBooks)
-	if err != nil {
-		t.Errorf("GetList() doesn`t work, err = '%v'\n", err)
-	}
-	for _, b := range val {
-		fmt.Printf("b = '%v'\n", b)
-	}
-
+	fmt.Printf("qrawl = '%q'\n", qrawl)
 }
 
 const noteBooks = "https://ru.aliexpress.com/af/category/202000104.html"
+const OneNote = "https://ru.aliexpress.com/item/13-3inch-newest-laptop-computer-aluminium-ultrabook-I3-5th-Gen-processor-4GB-128GB-SSD-backlit-keyboard/32672611082.html"
 
 //func containsAll(expect, arr []string) bool {
 //	m := make(map[string]struct{}, len(expect)) // создал мапу динной слайса expect, который = testSlice
