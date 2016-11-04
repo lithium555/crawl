@@ -1,7 +1,7 @@
 package aliExpress
 
 import (
-	"fmt"
+	"log"
 	"strings"
 	"testing"
 )
@@ -36,7 +36,6 @@ func TestGetComputerId(t *testing.T) {
 	for _, u := range errorArr {
 		t.Errorf("errorArr = '%v'\n", u)
 	}
-
 	//sl, err := Get()
 	//if err != nil {
 	//	t.Errorf("Func Get() does not work, err = '%v'\n", err)
@@ -44,22 +43,40 @@ func TestGetComputerId(t *testing.T) {
 	//for _, e := range sl {
 	//	log.Printf("e = '%v'\n", e)
 	//}
-	//val, err := GetList(noteBooks)
-	//if err != nil {
-	//	t.Errorf("GetList() doesn`t work, err = '%v'\n", err)
+	val, np, err := GetList(motheboards)
+	if err != nil {
+		t.Errorf("GetList() doesn`t work, err = '%v'\n", err)
+	}
+	log.Printf("val = '%v'\n , np = '%v'\n", val, np)
+
+	//for next := motheboards; next != "";{
+	//	_, np, err := GetList(next)
+	//	if err != nil{
+	//		t.Errorf("FUNC GetList() doesn`t work, err = '%v'\n", err)
+	//	}
+	//	log.Printf("NEXT PAGE = '%v'\n", np)
+	//	next = np
 	//}
+
 	//for _, b := range val {
 	//	fmt.Printf("b = '%v'\n", b)
 	//}
-	qrawl, err := GetAliSpecification(OneNote)
+	//log.Printf("NEXT PAGE = '%v'\n", np)
+	//qrawl, err := GetAliSpecification(OneNote)
+	//if err != nil {
+	//	t.Errorf("func GetAliSpecification() doen`t work, er = '%v'\n", err)
+	//}
+	//fmt.Printf("qrawl = '%q'\n", qrawl)
+	obj, err := GetAliSpecification("https://ru.aliexpress.com/item/Free-shipping-original-motherboard-for-Gigabyte-GA-MA770T-UD3-DDR3-AM3-motherboards-all-solid/32709149208.html?spm=2114.30010608.3.1.6HLi8f&ws_ab_test=searchweb0_0,searchweb201602_2_10093_10091_10090_10088_10089,searchweb201603_1&btsid=3089ecbd-32e6-4879-8969-f65158b35ac9")
 	if err != nil {
-		t.Errorf("func GetAliSpecification() doen`t work, er = '%v'\n", err)
+		t.Errorf("GetAliSpecification() doesn`t work, err = '%v'\n", err)
 	}
-	fmt.Printf("qrawl = '%q'\n", qrawl)
+	log.Printf("obj = '%v'\n", obj)
 }
 
 const noteBooks = "https://ru.aliexpress.com/af/category/202000104.html"
 const OneNote = "https://ru.aliexpress.com/item/13-3inch-newest-laptop-computer-aluminium-ultrabook-I3-5th-Gen-processor-4GB-128GB-SSD-backlit-keyboard/32672611082.html"
+const motheboards = "https://ru.aliexpress.com/af/category/202001172.html"
 
 //func containsAll(expect, arr []string) bool {
 //	m := make(map[string]struct{}, len(expect)) // создал мапу динной слайса expect, который = testSlice

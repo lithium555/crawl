@@ -72,11 +72,11 @@ func Get() ([]string, error) {
 // BASIC SITE:
 //   https://ru.aliexpress.com/all-wholesale-products.html
 
-func GetList(v string) ([]string, error) {
+func GetList(v string) ([]string, string, error) {
 	var data []string
 	doc, err := goquery.NewDocument(v)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	doc.Find(".detail h3 a").Each(func(i int, s *goquery.Selection) {
 		link, ok := s.Attr("href")
@@ -91,7 +91,25 @@ func GetList(v string) ([]string, error) {
 			data[i] = "https:" + data[i]
 		}
 	}
-	return data, nil
+	var np string
+	doc.Find("a.page-next").Each(func(i int, s *goquery.Selection) {
+		/*
+				Also to doc.Find(".ui-pagination-navi.util-left>a:last-child") this selector works great too
+					:last-child - псевдокласс
+		 			типа последний элемент которому подходит селектор
+		 			в родительськом элементе
+		*/
+		link, ok := s.Attr("href")
+		if !ok {
+			return
+		}
+		nextPage := strings.TrimSpace(link)
+		if strings.HasPrefix(nextPage, "//") {
+			nextPage = "https:" + nextPage
+		}
+		np = nextPage
+	})
+	return data, np, nil
 }
 
 func GetAliSpecification(url string) (*gcrawl.Object, error) {
