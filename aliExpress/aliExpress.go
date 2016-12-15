@@ -152,8 +152,8 @@ func GetAliSpecification(url string) (*gcrawl.Object, error) {
 		price := s.Find("#j-sku-price").Text()
 		price = strings.Replace(price, ",", ".", -1)
 		price = strings.Replace(price, " ", "", -1)
-		log.Printf("price = '%v'\n", price)
-		log.Printf("price2 = '%x' '%x'", price, " ")
+		//	log.Printf("price = '%v'\n", price)
+		//	log.Printf("price2 = '%x' '%x'", price, " ")
 		var data2 gcrawl.Value
 		data2 = gcrawl.String(price)
 		slice = append(slice, gcrawl.Property{
