@@ -329,3 +329,5 @@ func TestAllCharacteristics2(t *testing.T) {
 	//fmt.Printf("Object.Properties = '%v'\n", object.Properties)
 	//fmt.Printf("Object.URL = '%v'\n", object.URL)
 }
+
+//http://rozetka.com.ua/hewlett_packard_250_y8c06es/p12009754/

@@ -25,25 +25,30 @@ func main() {
 			log.Printf("ERROR in rozetka.ListProduct(): '%v'\n", err)
 		}
 		for _, t := range list {
-			category, err := rozetka.Categories(list)
+			category, err := rozetka.Categories(t)
 			if err != nil {
 				log.Printf("ERROR in rozetka.Categories(): '%v'\n", err)
 			}
 			for _, m := range category {
-				getLink, _, err := rozetka.GetLinkOnProduct(m)
-				if err != nil {
-					log.Printf("ERROR in rozetka.GetLinkOnProduct(): '%v'\n", err)
+				for next, i := m, 0; next != "" && i < 3; i++ {
+					getLink, nextPage, err := rozetka.GetLinkOnProduct(m)
+					if err != nil {
+						log.Printf("ERROR in rozetka.GetLinkOnProduct(): '%v'\n", err)
+					}
+					next = nextPage
+					for _, r := range getLink {
+						allcharacteristics, err := rozetka.AllCharacteristics(r)
+						if err != nil {
+							log.Printf("ERROR in rozetka.AllCharacteristics(): '%v'\n", err)
+						}
+						//object, err := rozetka.GetSpecification(allcharacteristics)
+						//if err != nil {
+						//	log.Printf("ERROR in ozetka.GetSpecification(): '%v'\n", err)
+						//}
+						err3 := nquads.WriteObject(file, allcharacteristics)
+						fmt.Println(err3)
+					}
 				}
-				allcharacteristics, err := rozetka.AllCharacteristics(getLink)
-				if err != nil {
-					log.Printf("ERROR in rozetka.AllCharacteristics(): '%v'\n", err)
-				}
-				object, err := rozetka.GetSpecification(allcharacteristics)
-				if err != nil {
-					log.Printf("ERROR in ozetka.GetSpecification(): '%v'\n", err)
-				}
-				err3 := nquads.WriteObject(file, object)
-				fmt.Println(err3)
 			}
 		}
 	}
