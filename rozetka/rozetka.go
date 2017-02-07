@@ -108,7 +108,6 @@ func AllCharacteristics(url string) (*gcrawl.Object, error) {
 			return
 		}
 		newUrl = link
-		//log.Printf("AllCharacteristics = '%v'\n", newUrl)
 	})
 	//Достать старую и новую цену на продукт
 	var priceOld string
@@ -116,12 +115,21 @@ func AllCharacteristics(url string) (*gcrawl.Object, error) {
 	doc.Find(".slider-i-td[name=scroll-element].g-price.float-lt[name=price]>.g-price-uah").Each(func(i int, s *goquery.Selection) {
 		priceOld = strings.TrimSpace(s.Text())
 	})
-	//log.Printf("priceOld = '%v'\n", priceOld)
 	var priceDiscount string
 	doc.Find(".g-price+[name=price].g-price-uah.g-kit-price-uah").Each(func(i int, s *goquery.Selection) {
 		priceDiscount = strings.TrimSpace(s.Text())
 	})
-	//log.Printf("priceDiscount = '%v'\n", priceDiscount)
+	if newUrl == "" {
+		var productName string
+		doc.Find(".detail-title").Each(func(i int, s *goquery.Selection) {
+			productName = strings.TrimSpace(s.Text())
+		})
+		return &gcrawl.Object{
+			URL:        url,
+			Properties: nil,
+			Name:       productName,
+		}, nil
+	}
 	object, err := getSpecification(newUrl)
 	if err != nil {
 		return nil, err
@@ -153,15 +161,14 @@ func getSpecification(url string) (*gcrawl.Object, error) {
 		}
 		//		value := strings.TrimSpace(s.Find(".pp-characteristics-tab-i-field").Text())
 		//т.е. если нету s.Find(".glossary-term").Text() то нужно искать s.Find(".pp-characteristics-tab-i-title").Text()
-
 		key = strings.Trim(key, " ")
 		key = strings.Trim(key, "\x09 \n\r")
 		//0a это сброс строки
 		//09 - вот это странные штуки
-		//		log.Printf("key = '%v'\n", key)
 		value := strings.TrimSpace(s.Find(".pp-characteristics-tab-i-field").Text())
 		value = strings.TrimSpace(value)
-		//	log.Printf("value = '%v'\n", value)
+		value = strings.Replace(value, "\t", "", -1)
+		//		log.Printf("value = '%q'\n", value)
 		var data gcrawl.Value
 		data = gcrawl.String(value)
 		slice = append(slice, gcrawl.Property{

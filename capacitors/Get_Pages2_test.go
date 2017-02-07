@@ -1,9 +1,9 @@
 package capacitors
 
 import (
-	"testing"
 	"log"
 	"reflect"
+	"testing"
 )
 
 func TestGetCapacitorsFamily(t *testing.T) {
@@ -28,9 +28,7 @@ func TestGetCapacitorsFamily(t *testing.T) {
 		t.Error(err)
 	}
 	log.Println(rezSlice)
-	if !reflect.DeepEqual(testSlice, rezSlice){
+	if !reflect.DeepEqual(testSlice, rezSlice) {
 		t.Errorf("The slices are not equally: testSlice: '%v' \n rezSlice: '%v'\n", testSlice, rezSlice)
 	}
 }
-
-

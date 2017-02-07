@@ -25,6 +25,6 @@ func main() {
 
 	var b bytes.Buffer
 	err := nquads.WriteObject(&b, val)
-//	log.Printf("b is == '%v'", b.String())
+	//	log.Printf("b is == '%v'", b.String())
 	fmt.Println(err)
 }

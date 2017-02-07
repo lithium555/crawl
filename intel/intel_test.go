@@ -7,5 +7,3 @@ func TestIntelStuff(t *testing.T) {
 	ListProducts("88392")
 	GetFamiliesId()
 }
-
-

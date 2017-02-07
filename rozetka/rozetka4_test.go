@@ -31,8 +31,8 @@ func TestAllCharacteristics5(t *testing.T) {
 
 	var wg sync.WaitGroup
 
-	wg.Wait()
 	write := make(chan string) // t
+	wg.Add(10)
 
 	family, err := FamiliesId()
 	//for _, v := range family{
@@ -41,11 +41,12 @@ func TestAllCharacteristics5(t *testing.T) {
 	if err != nil {
 		log.Printf("ERROR in rozetka.FamiliesId(): '%v'\n", err)
 	}
-	wg.Add(1)
+
 	var mu sync.Mutex
 	for i := 0; i < 10; i++ {
 		go func() {
 			defer wg.Done()
+			defer log.Println("++++++++++++++++++routine exit")
 			//  This CODE I can replace for
 			//for {
 			//	it , ok := <- write
@@ -63,18 +64,18 @@ func TestAllCharacteristics5(t *testing.T) {
 					log.Printf("ERROR in rozetka.Categories(): '%v'\n", err)
 				}
 				for _, v := range category {
-					fmt.Printf("v to write2 = '%v'\n", v)
+					//	fmt.Printf("v to write2 = '%v'\n", v)
 					//write2 <- v
-					log.Printf("DATA = '%v'\n", v)
-					category, err := Categories(v)
-					if len(category) > 3 {
-						category = category[:3]
+					//	log.Printf("DATA = '%v'\n", v)
+					category2, err := Categories(v)
+					if len(category2) > 3 {
+						category2 = category2[:3]
 					}
 					if err != nil {
 						log.Printf("ERROR in rozetka.Categories(): '%v'\n", err)
 					}
-					for _, m := range category {
-						fmt.Printf("category m= '%v'\n", m)
+					for _, m := range category2 {
+						fmt.Printf("category2 m= '%v'\n", m)
 						for next, i := m, 0; next != "" && i < 3; i++ {
 							getLink, nextPage, err := GetLinkOnProduct(m)
 							if err != nil {
@@ -88,33 +89,39 @@ func TestAllCharacteristics5(t *testing.T) {
 								allcharacteristics, err := AllCharacteristics(r)
 								if err != nil {
 									log.Printf("ERROR in rozetka.AllCharacteristics(): '%v'\n", err)
+									log.Printf("r = '%v'\n", r)
 								}
 								//object, err := rozetka.GetSpecification(allcharacteristics)
 								//if err != nil {
 								//	log.Printf("ERROR in ozetka.GetSpecification(): '%v'\n", err)
 								//}
-								mu.Lock()
+
 								//if allcharacteristics == nil{
 								//	//t.Errorf("allcharacteristics has nil pointer = '%v'", allcharacteristics)
 								//	return
 								//}
+								if allcharacteristics == nil {
+									break
+								}
 								mu.Lock()
 								err3 := nquads.WriteObject(gzipWriter, allcharacteristics)
 								mu.Unlock()
-								fmt.Println(err3)
 								log.Println(err3)
 							}
 						}
 					}
 				}
 			}
+			//time.Sleep(time.Second * 4)
+			log.Println("ROOTINE ENDED!!!!!!!!")
 		}()
 	}
 
 	for _, v := range family {
-		log.Printf("write (variable.val) = '%v'\n", v)
+		//log.Printf("write (variable.val) = '%v'\n", v)
 		write <- v
 	}
+	close(write)
 	//for _, v := range family {
 	//	list, err := rozetka.ListProduct(v)
 	//	if err != nil {
@@ -127,4 +134,8 @@ func TestAllCharacteristics5(t *testing.T) {
 	//}
 	//list := data.val
 	//for _, t := range list {
+	//	time.Sleep(time.Second * 2)
+
+	wg.Wait()
+	fmt.Println("We are done!")
 }
